@@ -9,7 +9,7 @@ use crate::{
         aead::AeadAlgorithm, hash::HashAlgorithm, public_key::PublicKeyAlgorithm,
         sym::SymmetricKeyAlgorithm,
     },
-    errors::{bail, ensure, ensure_eq, format_err, unsupported_err, Result},
+    errors::{Result, bail, ensure, ensure_eq, format_err, unsupported_err},
     packet::{
         Notation, PacketHeader, RevocationCode, Subpacket, SubpacketData, SubpacketLength,
         SubpacketType,
@@ -445,7 +445,7 @@ fn issuer<B: BufRead>(mut i: B) -> Result<SubpacketData> {
 /// Ref: https://www.rfc-editor.org/rfc/rfc9580.html#name-key-expiration-time
 fn key_expiration<B: BufRead>(mut i: B) -> Result<SubpacketData> {
     // 4-octet time field
-    let duration = i.read_duration()?;
+    let duration = i.read_expiration_duration()?;
 
     Ok(SubpacketData::KeyExpirationTime(duration))
 }
@@ -504,7 +504,7 @@ fn pref_com_alg<B: BufRead>(mut i: B) -> Result<SubpacketData> {
 /// Ref: https://www.rfc-editor.org/rfc/rfc9580.html#name-signature-expiration-time
 fn signature_expiration_time<B: BufRead>(mut i: B) -> Result<SubpacketData> {
     // 4-octet time field
-    let duration = i.read_duration()?;
+    let duration = i.read_expiration_duration()?;
 
     Ok(SubpacketData::SignatureExpirationTime(duration))
 }
